@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>给世界上最可爱的你</title>
+
+<style>
+body{
+    margin:0;
+    background:#ffeff5;
+    font-family:"微软雅黑",sans-serif;
+    text-align:center;
+    color:#333;
+    overflow-x:hidden;
+}
+.box{ margin-top:80px; position:relative; z-index:2;}
+h1{ color:#ff4d88;}
+
+button{
+    padding:15px 30px;
+    font-size:20px;
+    background:#ff4d88;
+    border:none;
+    color:white;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+.hidden{ display:none; margin-top:30px; font-size:22px;}
+
+.photo{
+    width:320px;
+    border-radius:20px;
+    margin-top:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    cursor:pointer;
+}
+
+.heart{
+    position: fixed;
+    bottom: -20px;
+    font-size: 22px;
+    animation: floatUp 4s linear forwards;
+}
+@keyframes floatUp{
+    0%{transform: translateY(0); opacity:1;}
+    100%{transform: translateY(-110vh); opacity:0;}
+}
+
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    pointer-events:none;
+}
+
+.modal{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+.modal img{
+    max-width:90%;
+    max-height:90%;
+    border-radius:20px;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<div class="box">
+    <h1>🎂 有人生日要到了</h1>
+    <p>点下面按钮领取你的生日惊喜</p>
+    <button onclick="show()">点我一下</button>
+
+    <div id="msg" class="hidden">
+        <h2>生日快乐，我的小公主 ❤️</h2>
+
+        <!-- 图片 -->
+        <img src="photo.jpg" class="photo" onclick="openImg(this)">
+
+        <p>
+        谢谢你出现在我的世界。<br>
+        这一年有你真的很幸福。<br><br>
+        以后每一年生日<br>
+        我都想陪你一起过。<br><br>
+        —— 你最爱的人
+        </p>
+    </div>
+</div>
+
+<audio id="bgm" src="music.mp3" loop></audio>
+
+<div class="modal" id="modal" onclick="closeImg()">
+    <img id="big">
+</div>
+
+<script>
+function show(){
+    document.getElementById("msg").style.display="block";
+    document.getElementById("bgm").play();
+    burst(window.innerWidth/2,200);
+}
+
+setInterval(()=>{
+    let h=document.createElement("div");
+    h.className="heart";
+    h.innerHTML="❤️";
+    h.style.left=Math.random()*100+"vw";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),4000);
+},300);
+
+function openImg(el){
+    document.getElementById("modal").style.display="flex";
+    document.getElementById("big").src=el.src;
+}
+function closeImg(){
+    document.getElementById("modal").style.display="none";
+}
+
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let arr=[];
+function burst(x,y){
+    for(let i=0;i<80;i++){
+        arr.push({
+            x:x,y:y,
+            dx:(Math.random()-0.5)*6,
+            dy:(Math.random()-0.5)*6,
+            life:60
+        });
+    }
+}
+document.addEventListener("click",e=>{
+    burst(e.clientX,e.clientY);
+});
+
+function loop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    arr.forEach(p=>{
+        p.x+=p.dx;
+        p.y+=p.dy;
+        p.life--;
+        ctx.fillRect(p.x,p.y,3,3);
+    });
+    arr=arr.filter(p=>p.life>0);
+    requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
